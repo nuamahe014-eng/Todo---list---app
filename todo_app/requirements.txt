@@ -1,1 +1,4 @@
-Flask==3.0.3
+flask
+gunicorn
+sqlalchemy
+psycopg2-binary
