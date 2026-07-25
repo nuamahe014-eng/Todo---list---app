@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}To-Do List{% endblock %}
+
+{% block content %}
+
+<section class="stats">
+    <div class="stat-card">
+        <span class="stat-number">{{ total_tasks }}</span>
+        <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-card stat-pending">
+        <span class="stat-number">{{ pending_count }}</span>
+        <span class="stat-label">Pending</span>
+    </div>
+    <div class="stat-card stat-completed">
+        <span class="stat-number">{{ completed_count }}</span>
+        <span class="stat-label">Completed</span>
+    </div>
+</section>
+
+<section class="toolbar">
+    <form action="{{ url_for('index') }}" method="get" class="search-form">
+        <input type="hidden" name="filter" value="{{ current_filter }}">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search tasks by title or description..."
+            value="{{ search_query }}"
+            class="search-input"
+        >
+        <button type="submit" class="btn btn-secondary">Search</button>
+        {% if search_query %}
+            <a href="{{ url_for('index', filter=current_filter) }}" class="btn btn-link">Clear</a>
+        {% endif %}
+    </form>
+
+    <div class="filters">
+        <a href="{{ url_for('index', filter='all', q=search_query) }}"
+           class="filter-btn {% if current_filter == 'all' %}active{% endif %}">All</a>
+        <a href="{{ url_for('index', filter='pending', q=search_query) }}"
+           class="filter-btn {% if current_filter == 'pending' %}active{% endif %}">Pending</a>
+        <a href="{{ url_for('index', filter='completed', q=search_query) }}"
+           class="filter-btn {% if current_filter == 'completed' %}active{% endif %}">Completed</a>
+    </div>
+</section>
+
+<section class="task-list">
+    {% if tasks|length == 0 %}
+        <div class="empty-state">
+            <p>No tasks found.</p>
+            <a href="{{ url_for('add_task') }}" class="btn btn-primary">Add your first task</a>
+        </div>
+    {% else %}
+        {% for task in tasks %}
+            <div class="task-card {% if task['status'] == 'Completed' %}task-completed{% endif %}">
+                <div class="task-main">
+                    <h3 class="task-title">{{ task['title'] }}</h3>
+                    {% if task['description'] %}
+                        <p class="task-description">{{ task['description'] }}</p>
+                    {% endif %}
+                    <div class="task-meta">
+                        {% if task['due_date'] %}
+                            <span class="meta-item">📅 Due: {{ task['due_date'] }}</span>
+                        {% endif %}
+                        <span class="meta-item">🕒 Created: {{ task['created_at'] }}</span>
+                        <span class="status-badge status-{{ task['status']|lower }}">{{ task['status'] }}</span>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    {% if task['status'] == 'Pending' %}
+                        <a href="{{ url_for('complete_task', task_id=task['id']) }}" class="btn btn-success">Complete</a>
+                    {% else %}
+                        <a href="{{ url_for('pending_task', task_id=task['id']) }}" class="btn btn-secondary">Mark Pending</a>
+                    {% endif %}
+                    <a href="{{ url_for('edit_task', task_id=task['id']) }}" class="btn btn-edit">Edit</a>
+                    <form action="{{ url_for('delete_task', task_id=task['id']) }}" method="post" class="delete-form">
+                        <button type="submit" class="btn btn-danger confirm-delete">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</section>
+
+{% endblock %}

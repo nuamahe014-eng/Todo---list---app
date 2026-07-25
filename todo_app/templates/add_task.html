@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Add Task{% endblock %}
+
+{% block content %}
+
+<section class="form-page">
+    <h2>Add a New Task</h2>
+
+    <form action="{{ url_for('add_task') }}" method="post" class="task-form">
+        <div class="form-group">
+            <label for="title">Task Title *</label>
+            <input type="text" id="title" name="title" value="{{ title }}" required maxlength="200">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description (optional)</label>
+            <textarea id="description" name="description" rows="4">{{ description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="due_date">Due Date (optional)</label>
+            <input type="date" id="due_date" name="due_date" value="{{ due_date }}">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Add Task</button>
+            <a href="{{ url_for('index') }}" class="btn btn-link">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% endblock %}
